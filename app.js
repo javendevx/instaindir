@@ -1,6 +1,5 @@
 /* ─── Config ─────────────────────────────────────────────────── */
-const WORKER_URL = 'https://sparkling-paper-8379.jxveninc.workers.dev'
-const COBALT_URL = WORKER_URL
+const COBALT_URL = 'https://javendev-cobalt-api.hf.space';
 /* ─── State ──────────────────────────────────────────────────── */
 const MAX_HISTORY = 30;
 let currentPage = 'home';
@@ -84,8 +83,8 @@ function setupEvents() {
   clearHistBtn.addEventListener('click', clearHistory);
 
   urlInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleDownload();
-});
+    if (e.key === 'Enter') handleDownload();
+  });
 
   // Auto-paste on focus if clipboard has instagram url
   urlInput.addEventListener('focus', () => {
@@ -145,7 +144,7 @@ async function handleDownload() {
   showStatus('İndirme bağlantısı alınıyor...', 'loading');
 
   try {
-    const response = await fetch(`${WORKER_URL}/`, {
+    const response = await fetch(`${COBALT_URL}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -172,7 +171,10 @@ async function handleDownload() {
       const downloadUrl = data.url;
       saveToHistory(rawUrl, downloadUrl);
       triggerDownload(downloadUrl, rawUrl);
+      showStatus('İndirme başladı! Dosya cihazınıza kaydediliyor.', 'success');
       urlInput.value = '';
+    } else {
+      throw new Error('Beklenmeyen yanıt: ' + data.status);
     }
 
   } catch (err) {
@@ -185,24 +187,48 @@ async function handleDownload() {
 
 /* ─── Trigger Download ───────────────────────────────────────── */
 async function triggerDownload(url, sourceUrl) {
-  showStatus('⏳ Video indiriliyor, lütfen bekleyin...', 'loading');
-  try {
-    const proxyUrl = `${WORKER_URL}/download?url=${encodeURIComponent(url)}`;
-    const response = await fetch(proxyUrl);
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  if (isIOS) {
+    try {
+      showStatus('Video indiriliyor, lütfen bekleyin...', 'loading');
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = generateFilename(sourceUrl);
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+        a.remove();
+      }, 1000);
+      showStatus('✅ İndirme başladı!', 'success');
+    } catch (e) {
+      window.open(url, '_blank');
+      showStatus('Video açıldı → Uzun bas → Videoyu Kaydet', 'success');
+    }
+  } else {
     const a = document.createElement('a');
-    a.href = blobUrl;
+    a.href = url;
     a.download = generateFilename(sourceUrl);
+    a.target = '_blank';
+    a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
-    setTimeout(() => {
-      URL.revokeObjectURL(blobUrl);
-      a.remove();
-    }, 1000);
-    showStatus('✅ İndirme başladı! Dosyalar uygulamasını kontrol et.', 'success');
-  } catch (e) {
-    showStatus('❌ İndirme başarısız: ' + e.message, 'error');
+    setTimeout(() => a.remove(), 500);
+  }
+}
+
+function generateFilename(sourceUrl) {
+  try {
+    const parts = new URL(sourceUrl).pathname.split('/').filter(Boolean);
+    const id = parts[parts.length - 1] || 'video';
+    return `instagram_${id}.mp4`;
+  } catch {
+    return 'instagram_video.mp4';
   }
 }
 
@@ -314,32 +340,4 @@ function formatTime(ts) {
 
 function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function showVideoPlayer(url, sourceUrl) {
-  statusMsg.innerHTML = `
-    <div style="text-align:center">
-      <video 
-        id="insta-video"
-        src="${url}" 
-        controls 
-        playsinline
-        webkit-playsinline
-        style="width:100%;border-radius:12px;margin-bottom:12px;max-height:400px"
-      ></video>
-      <a 
-        href="${url}" 
-        target="_blank"
-        style="display:block;background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);color:white;padding:14px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none;margin-top:8px;"
-      >
-        🔗 Videoyu Yeni Sekmede Aç
-      </a>
-      <p style="font-size:12px;color:#aaa;margin-top:10px;">
-        Yeni sekmede açıldıktan sonra:<br/>
-        <strong>Paylaş butonu → Dosyayı Kaydet</strong>
-      </p>
-    </div>
-  `;
-  statusMsg.className = 'status-msg success';
-  statusMsg.classList.remove('hidden');
 }
