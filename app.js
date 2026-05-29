@@ -187,16 +187,31 @@ async function handleDownload() {
 }
 
 /* ─── Trigger Download ───────────────────────────────────────── */
-function triggerDownload(url, sourceUrl) {
+async function triggerDownload(url, sourceUrl) {
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
   if (isIOS) {
-  window.open(url, '_blank');
-  showStatus('✅ Video yeni sekmede açıldı! Videoya parmağınızı uzun basılı tutun → "Videoyu Kaydet" seçeneğine basın.', 'success');
-}
+    try {
+      showStatus('Video indiriliyor, lütfen bekleyin...', 'loading');
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = generateFilename(sourceUrl);
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+        a.remove();
+      }, 1000);
+      showStatus('✅ İndirme başladı!', 'success');
+    } catch (e) {
+      window.open(url, '_blank');
+      showStatus('Video açıldı → Uzun bas → Videoyu Kaydet', 'success');
+    }
   } else {
-    // Desktop/Android: programmatic download
     const a = document.createElement('a');
     a.href = url;
     a.download = generateFilename(sourceUrl);
