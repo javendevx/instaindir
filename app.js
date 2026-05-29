@@ -1,5 +1,5 @@
 /* ─── Config ─────────────────────────────────────────────────── */
-const COBALT_URL = 'BURAYA_KOYEB_URL';
+const COBALT_URL = 'https://javendev-cobalt-api.hf.space';
 
 /* ─── State ──────────────────────────────────────────────────── */
 const MAX_HISTORY = 30;
