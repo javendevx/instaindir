@@ -80,12 +80,12 @@ function navigateTo(page) {
 /* ─── Events ─────────────────────────────────────────────────── */
 function setupEvents() {
   pasteBtn.addEventListener('click', pasteFromClipboard);
-  downloadBtn.addEventListener('click', );
+  downloadBtn.addEventListener('click', handleDownload);
   clearHistBtn.addEventListener('click', clearHistory);
 
   urlInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') ();
-  });
+  if (e.key === 'Enter') handleDownload();
+});
 
   // Auto-paste on focus if clipboard has instagram url
   urlInput.addEventListener('focus', () => {
