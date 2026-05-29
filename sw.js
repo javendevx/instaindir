@@ -1,4 +1,4 @@
-const CACHE_NAME = 'instaindir-v4';
+const CACHE_NAME = 'instaindir-v5';
 const STATIC_ASSETS = [
   '/instaindir/',
   '/instaindir/index.html',
