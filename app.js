@@ -171,11 +171,10 @@ async function handleDownload() {
     if (data.status === 'tunnel' || data.status === 'redirect') {
       const downloadUrl = data.url;
       saveToHistory(rawUrl, downloadUrl);
-      triggerDownload(downloadUrl, rawUrl);
-      showStatus('İndirme başladı! Dosya cihazınıza kaydediliyor.', 'success');
+      
+      // Sayfada video göster
+      showVideoPlayer(downloadUrl, rawUrl);
       urlInput.value = '';
-    } else {
-      throw new Error('Beklenmeyen yanıt: ' + data.status);
     }
 
   } catch (err) {
@@ -341,4 +340,22 @@ function formatTime(ts) {
 
 function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function showVideoPlayer(url, sourceUrl) {
+  statusMsg.innerHTML = `
+    <div style="text-align:center">
+      <video 
+        src="${url}" 
+        controls 
+        playsinline
+        style="width:100%;border-radius:12px;margin-bottom:12px;max-height:400px"
+      ></video>
+      <p style="font-size:13px;color:#aaa;">
+        📥 Sağ alttaki <strong>⬇️</strong> ikonuna bas → <strong>Videoyu Kaydet</strong>
+      </p>
+    </div>
+  `;
+  statusMsg.className = 'status-msg success';
+  statusMsg.classList.remove('hidden');
 }
