@@ -346,13 +346,23 @@ function showVideoPlayer(url, sourceUrl) {
   statusMsg.innerHTML = `
     <div style="text-align:center">
       <video 
+        id="insta-video"
         src="${url}" 
         controls 
         playsinline
+        webkit-playsinline
         style="width:100%;border-radius:12px;margin-bottom:12px;max-height:400px"
       ></video>
-      <p style="font-size:13px;color:#aaa;">
-        📥 Sağ alttaki <strong>⬇️</strong> ikonuna bas → <strong>Videoyu Kaydet</strong>
+      <a 
+        href="${url}" 
+        target="_blank"
+        style="display:block;background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);color:white;padding:14px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none;margin-top:8px;"
+      >
+        🔗 Videoyu Yeni Sekmede Aç
+      </a>
+      <p style="font-size:12px;color:#aaa;margin-top:10px;">
+        Yeni sekmede açıldıktan sonra:<br/>
+        <strong>Paylaş butonu → Dosyayı Kaydet</strong>
       </p>
     </div>
   `;
