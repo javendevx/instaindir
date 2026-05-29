@@ -3,6 +3,7 @@
   "short_name": "InstaIndir",
   "description": "Instagram video ve reels indirici",
   "start_url": "/instaindir/",
+  "scope": "/instaindir/",
   "display": "standalone",
   "background_color": "#0d0d0d",
   "theme_color": "#0d0d0d",
