@@ -1,12 +1,12 @@
-const CACHE_NAME = 'instaindir-v3';
+const CACHE_NAME = 'instaindir-v4';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/instaindir/',
+  '/instaindir/index.html',
+  '/instaindir/style.css',
+  '/instaindir/app.js',
+  '/instaindir/manifest.json',
+  '/instaindir/icons/icon-192.png',
+  '/instaindir/icons/icon-512.png',
 ];
 
 self.addEventListener('install', event => {
@@ -26,9 +26,7 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Only cache GET requests for our own origin
   if (event.request.method !== 'GET') return;
-
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
@@ -42,6 +40,8 @@ self.addEventListener('fetch', event => {
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         return response;
+      }).catch(() => {
+        return caches.match('/instaindir/index.html');
       });
     })
   );
