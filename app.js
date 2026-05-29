@@ -1,6 +1,6 @@
 /* ─── Config ─────────────────────────────────────────────────── */
-const COBALT_URL = 'https://javendev-cobalt-api.hf.space';
-
+const WORKER_URL = 'sparkling-paper-8379.jxveninc.workers.dev'
+const COBALT_URL = WORKER_URL
 /* ─── State ──────────────────────────────────────────────────── */
 const MAX_HISTORY = 30;
 let currentPage = 'home';
@@ -187,41 +187,15 @@ async function handleDownload() {
 
 /* ─── Trigger Download ───────────────────────────────────────── */
 async function triggerDownload(url, sourceUrl) {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-  if (isIOS) {
-    try {
-      showStatus('Video indiriliyor, lütfen bekleyin...', 'loading');
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = generateFilename(sourceUrl);
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-        a.remove();
-      }, 1000);
-      showStatus('✅ İndirme başladı!', 'success');
-    } catch (e) {
-      window.open(url, '_blank');
-      showStatus('Video açıldı → Uzun bas → Videoyu Kaydet', 'success');
-    }
-  } else {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = generateFilename(sourceUrl);
-    a.target = '_blank';
-    a.rel = 'noopener';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => a.remove(), 500);
-  }
+  const proxyUrl = `${WORKER_URL}/download?url=${encodeURIComponent(url)}`;
+  const a = document.createElement('a');
+  a.href = proxyUrl;
+  a.download = generateFilename(sourceUrl);
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 500);
+  showStatus('✅ İndirme başladı! Dosyalar uygulamasını kontrol et.', 'success');
 }
-
 function generateFilename(sourceUrl) {
   try {
     const parts = new URL(sourceUrl).pathname.split('/').filter(Boolean);
