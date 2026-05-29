@@ -30,7 +30,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }, 1200);
 
   // Config warning
-  if (!COBALT_URL || COBALT_URL === 'BURAYA_KOYEB_URL') {
+  if (!COBALT_URL || COBALT_URL === 'BURAYA_KOYEB_URL' || COBALT_URL === '') {
     configBanner.classList.remove('hidden');
     app.classList.add('has-banner');
   }
