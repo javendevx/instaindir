@@ -185,22 +185,24 @@ async function handleDownload() {
 
 /* ─── Trigger Download ───────────────────────────────────────── */
 async function triggerDownload(url, sourceUrl) {
-  const proxyUrl = `${WORKER_URL}/download?url=${encodeURIComponent(url)}`;
-  const a = document.createElement('a');
-  a.href = proxyUrl;
-  a.download = generateFilename(sourceUrl);
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => a.remove(), 500);
-  showStatus('✅ İndirme başladı! Dosyalar uygulamasını kontrol et.', 'success');
-}
-function generateFilename(sourceUrl) {
+  showStatus('⏳ Video indiriliyor, lütfen bekleyin...', 'loading');
   try {
-    const parts = new URL(sourceUrl).pathname.split('/').filter(Boolean);
-    const id = parts[parts.length - 1] || 'video';
-    return `instagram_${id}.mp4`;
-  } catch {
-    return 'instagram_video.mp4';
+    const proxyUrl = `${WORKER_URL}/download?url=${encodeURIComponent(url)}`;
+    const response = await fetch(proxyUrl);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = generateFilename(sourceUrl);
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl);
+      a.remove();
+    }, 1000);
+    showStatus('✅ İndirme başladı! Dosyalar uygulamasını kontrol et.', 'success');
+  } catch (e) {
+    showStatus('❌ İndirme başarısız: ' + e.message, 'error');
   }
 }
 
