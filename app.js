@@ -192,8 +192,9 @@ function triggerDownload(url, sourceUrl) {
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
   if (isIOS) {
-    // iOS: open in new tab, user saves manually
-    window.open(url, '_blank');
+  window.open(url, '_blank');
+  showStatus('✅ Video yeni sekmede açıldı! Videoya parmağınızı uzun basılı tutun → "Videoyu Kaydet" seçeneğine basın.', 'success');
+}
   } else {
     // Desktop/Android: programmatic download
     const a = document.createElement('a');
