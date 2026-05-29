@@ -1,5 +1,5 @@
 /* ─── Config ─────────────────────────────────────────────────── */
-const WORKER_URL = 'sparkling-paper-8379.jxveninc.workers.dev'
+const WORKER_URL = 'https://sparkling-paper-8379.jxveninc.workers.dev'
 const COBALT_URL = WORKER_URL
 /* ─── State ──────────────────────────────────────────────────── */
 const MAX_HISTORY = 30;
@@ -80,11 +80,11 @@ function navigateTo(page) {
 /* ─── Events ─────────────────────────────────────────────────── */
 function setupEvents() {
   pasteBtn.addEventListener('click', pasteFromClipboard);
-  downloadBtn.addEventListener('click', handleDownload);
+  downloadBtn.addEventListener('click', );
   clearHistBtn.addEventListener('click', clearHistory);
 
   urlInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleDownload();
+    if (e.key === 'Enter') ();
   });
 
   // Auto-paste on focus if clipboard has instagram url
@@ -145,7 +145,7 @@ async function handleDownload() {
   showStatus('İndirme bağlantısı alınıyor...', 'loading');
 
   try {
-    const response = await fetch(`${COBALT_URL}/`, {
+    const response = await fetch(`${WORKER_URL}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -171,9 +171,7 @@ async function handleDownload() {
     if (data.status === 'tunnel' || data.status === 'redirect') {
       const downloadUrl = data.url;
       saveToHistory(rawUrl, downloadUrl);
-      
-      // Sayfada video göster
-      showVideoPlayer(downloadUrl, rawUrl);
+      triggerDownload(downloadUrl, rawUrl);
       urlInput.value = '';
     }
 
