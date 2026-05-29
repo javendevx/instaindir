@@ -174,7 +174,16 @@
     </nav>
 
   </div>
-
+  <script>
+  // Splash fallback - 3 saniye sonra zorla kaldır
+  setTimeout(() => {
+    const splash = document.getElementById('splash');
+    const app = document.getElementById('app');
+    if (splash) splash.style.display = 'none';
+    if (app) app.classList.remove('hidden');
+  }, 3000);
+</script>
+<script src="app.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
